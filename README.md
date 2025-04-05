@@ -1,6 +1,6 @@
-# Chat Tast
+# FACEBOOKPAGECHAT
 
-A chat application built with React frontend and Express backend.
+A Facebook page chat application built with React frontend and Express backend.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ Before running the application, make sure you have the following installed:
 ### Clone the repository
 
 ```bash
-git clone <your-repository-url>
-cd Chat-Tast
+git clone https://github.com/selemonneguse/FacebookPageChat
+cd FACEBOOKPAGECHAT
 ```
 
 ### Backend Setup
@@ -23,7 +23,7 @@ cd Chat-Tast
 1. Navigate to the backend directory:
 
 ```bash
-cd chat/backend
+cd backend
 ```
 
 2. Install dependencies:
@@ -32,27 +32,20 @@ cd chat/backend
 npm install
 ```
 
-3. Create an `.env` file based on the example (if provided):
+3. Create an `.env` file if necessary:
 
 ```bash
-cp .env.example .env
+cp .env.example .env  # If an example file exists
 ```
 
 Then edit the `.env` file with your configuration values.
 
 ### Frontend Setup
 
-1. Navigate to the frontend directory:
+1. Install dependencies in the root directory:
 
 ```bash
-cd ..
-```
-
-You should now be in the `chat` directory.
-
-2. Install dependencies:
-
-```bash
+cd ..  # Return to the root directory if you were in backend
 npm install
 ```
 
@@ -63,7 +56,7 @@ npm install
 1. From the root directory:
 
 ```bash
-cd chat/backend
+cd backend
 npm start
 ```
 
@@ -75,7 +68,6 @@ The backend server should now be running on http://localhost:5000 (or your confi
 2. From the root directory:
 
 ```bash
-cd chat
 npm start
 ```
 
@@ -84,40 +76,39 @@ The React app should now be running on http://localhost:3000, and your browser s
 ## Project Structure
 
 ```
-Chat Tast/
+FACEBOOKPAGECHAT/
 │
-├── chat/                      # Frontend (React)
-│   ├── src/                   # Source files
-│   │   ├── App.js             # Main React component
-│   │   ├── App.css            # Styles for App component
-│   │   ├── index.js           # Entry point
-│   │   └── ...                # Other components/files
-│   ├── package.json           # Frontend dependencies
-│   └── ...
-│
-└── chat/backend/              # Backend (Express)
-    ├── routes/                # API routes
-    │   ├── main.js            # Main routes
-    │   └── ...                # Other route files
-    ├── controllers/           # Route controllers
-    ├── server.js              # Express server setup
-    ├── package.json           # Backend dependencies
-    └── .env                   # Environment variables
+├── backend/                   # Backend (Express)
+├── node_modules/              # Dependencies
+├── public/                    # Static files
+├── src/                       # Source files
+│   ├── App.js                 # Main React component
+│   ├── App.css                # Styles for App component
+│   ├── App.test.js            # App component tests
+│   ├── index.js               # Entry point
+│   ├── index.css              # Global styles
+│   ├── logo.svg               # Logo asset
+│   ├── reportWebVitals.js     # Performance reporting
+│   └── setupTests.js          # Test setup
+├── .gitignore                 # Git ignore file
+├── package-lock.json          # Dependency lock file
+├── package.json               # Project dependencies and scripts
+└── README.md                  # This file
 ```
 
 ## Available Scripts
 
-In the backend directory (`chat/backend`), you can run:
+In the backend directory (`backend`), you can run:
 
 ### `npm start`
 
 Runs the server in development mode.
 
-In the frontend directory (`chat`), you can run:
+In the root directory, you can run:
 
 ### `npm start`
 
-Runs the app in development mode.
+Runs the React app in development mode.
 
 ### `npm test`
 
