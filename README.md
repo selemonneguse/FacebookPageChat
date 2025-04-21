@@ -76,24 +76,16 @@ The React app should now be running on http://localhost:3000, and your browser s
 ## Project Structure
 
 ```
-FACEBOOKPAGECHAT/
-│
-├── backend/                   # Backend (Express)
-├── node_modules/              # Dependencies
-├── public/                    # Static files
-├── src/                       # Source files
-│   ├── App.js                 # Main React component
-│   ├── App.css                # Styles for App component
-│   ├── App.test.js            # App component tests
-│   ├── index.js               # Entry point
-│   ├── index.css              # Global styles
-│   ├── logo.svg               # Logo asset
-│   ├── reportWebVitals.js     # Performance reporting
-│   └── setupTests.js          # Test setup
-├── .gitignore                 # Git ignore file
-├── package-lock.json          # Dependency lock file
-├── package.json               # Project dependencies and scripts
-└── README.md                  # This file
+FacebookPageChat/
+├── backend/               # Express.js backend
+├── public/                # Static files
+├── src/                   # React frontend source code
+│   ├── components/        # Reusable components (if added)
+│   ├── App.js             # Main app component
+│   └── ...                # Other frontend files
+├── .env.example           # Example environment config
+├── package.json           # Root config for frontend
+├── README.md              # This file
 ```
 
 ## Available Scripts

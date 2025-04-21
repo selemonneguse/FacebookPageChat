@@ -26,9 +26,9 @@ exports.handleChatRequest = async (req, res, next) => {
         // Extract the actual text from the `parts` array
         const userText = lastUserMessage.parts[0].text;
     
-        // If the user requests to upload a photo, trigger the upload process
+        // If the user requests to upload a post, trigger the upload process
         if (userText.toLowerCase().includes("post")) {
-            console.log("Triggering photo upload...");
+            console.log("Triggering post upload...");
             const uploadResponse = await fetch("http://localhost:3000/chat/postToFacebook");
             const uploadData = await uploadResponse.json();
     
@@ -53,45 +53,76 @@ exports.handleChatRequest = async (req, res, next) => {
 exports.handlePostToFacebook = async (req, res, next) => {
     try {
         console.log("in postToFacebook");
-        
+
+        // שלב 1: קבלת הפוסטים הקיימים מהדף
+        const existingPostsResponse = await fetch(
+            `https://graph.facebook.com/v22.0/${process.env.PAGE_ID}/feed?access_token=${process.env.PAGE_ACCESS_TOKEN}`
+        );
+
+        const existingPostsData = await existingPostsResponse.json();
+        const existingMessages = existingPostsData.data ? existingPostsData.data.map(post => post.message).filter(message => message) : [];
+
+        console.log("Existing messages on the page:", existingMessages);
+
+        // שלב 2: שליחת הפוסטים הקיימים ל-AI וקבלת משפט חדש
+        const aiPrompt = `Give me a clear short sentence to post on my coffee business's Facebook page that is different from these existing sentences: "${existingMessages.join('", "')}"`;
+
         const messageResponse = await model.generateContent({
             contents: [
-              {
-                role: "user",
-                parts: [{ text: "Give me a short sentence to post on my coffee business's Facebook page." }]
-              }
+                {
+                    role: "user",
+                    parts: [{ text: aiPrompt }]
+                }
             ]
         });
-        
-        const textSentence = messageResponse.response.text();
 
+        const textSentence = messageResponse.response.text();
+        console.log("Generated sentence from AI:", textSentence);
+
+        // שלב 3: פרסום המשפט החדש בפייסבוק
         const postData = {
-            message: textSentence, 
+            message: textSentence,
             access_token: process.env.PAGE_ACCESS_TOKEN,
         };
 
         const response = await fetch(
             `https://graph.facebook.com/v22.0/${process.env.PAGE_ID}/feed`,
             {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(postData),
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(postData),
             }
         );
 
         const data = await response.json();
 
         if (data.id) {
-            console.log("successfully: ", data.id);
+            console.log("successfully posted: ", data.id);
             res.json({ success: true, message: textSentence });
         } else {
-            console.error("faild: ", data);
+            console.error("failed to post: ", data);
             res.status(400).json({ error: "Failed to post", details: data });
         }
     } catch (error) {
-        console.error("server faild: ", error);
+        console.error("server failed: ", error);
         res.status(500).json({ error: "Server error" });
     }
 };
   
-  
+exports.handleUploadImage = async (req, res, next) => {
+    try {
+        console.log("upload image");
+
+        if (!req.file) {
+            return res.status(400).json({ error: "No image uploaded" });
+        }
+
+        console.log("Uploaded file:", req.file.filename);
+        res.json({ success: true, filename: req.file.filename });
+    } catch (error) {
+        console.error("upload image failed: ", error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+
