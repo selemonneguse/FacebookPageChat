@@ -18,9 +18,11 @@ function ImageUploader() {
       const data = await response.json();
       if (data.success) {
         alert("Image uploaded: " + data.filename);
+        
       } else {
         alert("Upload failed");
       }
+      setImageFile(null);
     } catch (error) {
       console.error("Upload error:", error);
     }
