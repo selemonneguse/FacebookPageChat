@@ -7,11 +7,12 @@ import ImageUploader from "./ImageUploader";
 function Chat() {
   const [messages, setMessages] = useState([]);
 
+
   return (
     <div className="container-fluid bg-dark text-light vh-100 d-flex flex-column justify-content-end align-items-center p-3">
+      <h1>What would you like to share today?</h1>
       <ChatBox messages={messages} />
       <MessageInput messages={messages} setMessages={setMessages} />
-      <ImageUploader messages={messages} setMessages={setMessages} />
     </div>
   );
 }

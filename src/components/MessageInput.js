@@ -1,10 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-function MessageInput({ messages, setMessages }) {
+function MessageInput({ messages, setMessages}) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+
+  const handleImageSelectAndUpload = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      console.log("file: ", file);
+      setImageFile(file);
+      
+    };
+    input.click(); // מפעיל את בחירת הקובץ
+    
+  };
+
+  useEffect(() => {
+  if (imageFile) {
+    console.log("imageFile updated: ", imageFile);
+  }
+  }, [imageFile]);
 
   const sendMessage = async () => {
+
+    if(imageFile){
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      try {
+        
+        const response = await fetch("https://localhost:8443/chat/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+
+        const data = await response.json();
+        console.log("Response from server:", data);
+        setImageFile(null);
+        const newMessage =
+          "Image Upload successful with post message: " + data.reply.message;
+        const updatedMessages = [
+          ...messages,
+          { role: "model", parts: newMessage },
+        ];
+        setMessages(updatedMessages);
+      } catch (error) {
+        console.error("Upload error:", error);
+      }
+    }
+
     if (input.trim() === "" || isLoading) return;
 
     setIsLoading(true);
@@ -37,6 +88,7 @@ function MessageInput({ messages, setMessages }) {
     }
 
     setIsLoading(false);
+
   };
 
   return (
@@ -49,6 +101,15 @@ function MessageInput({ messages, setMessages }) {
         placeholder="Type a message..."
         disabled={isLoading}
       />
+
+      {imageFile ?    
+        <button className="btn btn-danger" onClick={() => setImageFile(null)}>
+          {"delete image"}
+        </button> : 
+        <button className="btn btn-info" onClick={handleImageSelectAndUpload}>
+          {"Choose image"}
+        </button>
+      }
       <button className="btn btn-success ms-2" onClick={sendMessage} disabled={isLoading}>
         {isLoading ? "Loading..." : "Send"}
       </button>
