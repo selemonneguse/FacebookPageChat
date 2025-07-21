@@ -18,9 +18,10 @@ function MessageInput({ messages, setMessages }) {
     }));
 
     try {
-      const response = await fetch("http://localhost:3000/chat", {
+      const response = await fetch("https://localhost:8443/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ messages: formattedMessages }),
       });
 
@@ -30,6 +31,7 @@ function MessageInput({ messages, setMessages }) {
         ...prevMessages,
         { role: "model", parts: data.reply },
       ]);
+      
     } catch (error) {
       console.error("Error:", error);
     }
