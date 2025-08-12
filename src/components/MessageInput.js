@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function MessageInput({ messages, setMessages}) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const navigate = useNavigate();
 
   const handleImageSelectAndUpload = () => {
     const input = document.createElement("input");
@@ -17,15 +19,9 @@ function MessageInput({ messages, setMessages}) {
       setImageFile(file);
       
     };
-    input.click(); // מפעיל את בחירת הקובץ
+    input.click();
     
   };
-
-  useEffect(() => {
-  if (imageFile) {
-    console.log("imageFile updated: ", imageFile);
-  }
-  }, [imageFile]);
 
   const sendMessage = async () => {
 
@@ -53,6 +49,7 @@ function MessageInput({ messages, setMessages}) {
         setMessages(updatedMessages);
       } catch (error) {
         console.error("Upload error:", error);
+        navigate('/');
       }
     }
 
@@ -85,6 +82,7 @@ function MessageInput({ messages, setMessages}) {
       
     } catch (error) {
       console.error("Error:", error);
+      navigate('/');
     }
 
     setIsLoading(false);
@@ -93,6 +91,7 @@ function MessageInput({ messages, setMessages}) {
 
   return (
     <div className="d-flex w-50 mt-3">
+      
       <input
         type="text"
         className="form-control bg-dark text-light border-secondary"
