@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from '@greatsumini/react-facebook-login';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [pages, setPages] = useState([]);
-  const [selectedPage, setSelectedPage] = useState(null);
   const [showPageSelection, setShowPageSelection] = useState(false);
   const navigate = useNavigate();
 
-  // בדיקה אם כבר יש session קיים
+  // check if there is a session
   useEffect(() => {
     fetch('https://localhost:8443/chat/facebook/check-session', {
       method: 'GET',
-      credentials: 'include', // 👈 חשוב מאוד! מאפשר שליחת קוקיז
+      credentials: 'include', 
     })
       .then(async res => {
         if (res.ok) {
-          // אם יש session - ננווט ישר לעמוד הראשי
           navigate('/chat');
         }
       })
@@ -25,7 +23,7 @@ export default function Login() {
       });
   }, [navigate]);
 
-  const responseFacebook = response => {
+  const handleLoginSuccess = (response) => {
     console.log("response: ", response);
     const userAccessToken = response.accessToken;
 
@@ -34,23 +32,11 @@ export default function Login() {
       return;
     }
 
-    const userData = {
-      name: response.name,
-      id: response.id,
-      avatar: response.picture.data.url,
-      accessToken: userAccessToken,
-    };
-
-    console.log('User Data:', userData);
-
-    // קבלת עמודי פייסבוק של המשתמש
+    // get data from facebook
     fetch(`https://graph.facebook.com/me/accounts?access_token=${userAccessToken}&fields=name,id,access_token`)
       .then(res => res.json())
       .then(data => {
         if (data.data && data.data.length > 0) {
-          console.log('User Pages:', data.data);
-          
-          // שמירת העמודים במצב הקומפוננטה
           setPages(data.data);
           setShowPageSelection(true);
         } else {
@@ -70,7 +56,6 @@ export default function Login() {
 
     console.log('Sending to server:', payload);
 
-    // שלח לשרת שלך את המידע הזה
     fetch('https://localhost:8443/chat/facebook/page-data', {
       method: 'POST',
       headers: {
@@ -79,7 +64,7 @@ export default function Login() {
       body: JSON.stringify(payload),
       credentials: 'include',
     })
-    .then(serverResponse => {
+    .then(() => {
       navigate("/chat");
     })
     .catch(err => {
@@ -87,16 +72,9 @@ export default function Login() {
     });
   };
 
-  
-  const componentClicked = data => {
-    
-    console.log("call back data: ", data);
-  }
-
   return (
     <div className="container-fluid bg-dark text-light vh-100 d-flex flex-column justify-content-end align-items-center p-3">
       
-      {/* אזור בחירת עמוד */}
       {showPageSelection ? (
         <div className="mb-4 w-100 d-flex flex-column align-items-center">
           <h3 className="mb-3 text-center">בחר עמוד פייסבוק</h3>
@@ -110,7 +88,6 @@ export default function Login() {
                 >
                   <div className="card-body text-center">
                     <h5 className="card-title">{page.name}</h5>
-                    <p className="card-text">ID: {page.id}</p>
                     <button className="btn btn-primary">בחר עמוד זה</button>
                   </div>
                 </div>
@@ -126,11 +103,10 @@ export default function Login() {
 
       <FacebookLogin
         appId="1327044148622457"
-        autoLoad={true}
-        fields="name,email,picture"
         scope="public_profile,pages_show_list,pages_read_engagement,pages_manage_posts"
-        onClick={componentClicked}
-        callback={responseFacebook} 
+        onSuccess={handleLoginSuccess}
+        onFail={(error) => console.error('Login Failed!', error)}
+        onProfileSuccess={(profile) => console.log('Get Profile Success!', profile)}
       />
     </div>
   );
